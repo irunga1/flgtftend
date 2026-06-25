@@ -9,7 +9,7 @@ import { getProyectos } from '../services/proyectoService';
 import { searchUsers } from '../services/userService';
 import { getSkills } from '../services/skillService';
 import { searchUsuarioSkills } from '../services/usuarioSkillService';
-import { createFreelancerProyecto } from '../services/freelancerProyectoService';
+import { aplicarProyecto } from '../services/aplicarService';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -141,16 +141,12 @@ export function Dashboard({ url }) {
     if (!propuesta.trim()) { showToast('Escribe tu propuesta antes de enviar.', 'warning'); return; }
     setSubmitting(true);
     try {
-      await createFreelancerProyecto({
-        id_proyecto:   Number(selectedProyecto.id_proyecto),
-        id_freelancer: viewerId,
-        propuesta:     propuesta.trim(),
-        estado:        'pendiente',
-      });
+      await aplicarProyecto(viewerId, Number(selectedProyecto.id_proyecto), propuesta.trim());
       showToast('¡Propuesta enviada exitosamente! 🎉', 'success');
       closeProyectoModal();
-    } catch {
-      showToast('Error al enviar la propuesta.', 'error');
+    } catch (err) {
+      const msg = err.response?.data?.desc || 'Error al enviar la propuesta.';
+      showToast(msg, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -451,9 +447,9 @@ export function Dashboard({ url }) {
                   </div>
 
                   <div class="modal-body p-4">
-                    <p class="text-muted mb-4" style={{ lineHeight: 1.7 }}>
+                    <pre class="text-muted mb-4" style={{ lineHeight: 1.7 }}>
                       {selectedProyecto.descripcion || 'Sin descripción disponible.'}
-                    </p>
+                    </pre>
 
                     <div class="row g-3 mb-4">
                       <div class="col-sm-6">

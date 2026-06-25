@@ -1,6 +1,7 @@
 # TODO
 
-- [x] Ajustar Perfil para que el bloque muestre "Mis proyecto" cuando el rol del viewer sea Cliente (id_rol = 3).
-- [x] Crear página Proyectos consumiendo endpoint /proyectos (según el requisito) y mostrado solo si id_rol = 3.
-- [x] Agregar ruta /proyectos en app.jsx.
+- [x] Ajustar normalización de `propuesta` en `src/pages/Proyectos.jsx` para que el modal muestre texto real cuando el backend lo envía (y solo muestre “Sin propuesta” cuando sea null/vacío).
+- [ ] Verificar que no se rompa el modal para proyectos sin `propuesta`.
+- [x] Correr build/dev para comprobar errores.
+
 

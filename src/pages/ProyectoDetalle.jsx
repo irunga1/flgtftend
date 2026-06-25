@@ -2,8 +2,9 @@ import { useState, useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import { Layout } from '../components/Layout';
 import { getProyectoById } from '../services/proyectoService';
-import { searchByProyecto, createFreelancerProyecto } from '../services/freelancerProyectoService';
+import { searchByProyecto } from '../services/freelancerProyectoService';
 import { getUserById } from '../services/userService';
+import { aplicarProyecto } from '../services/aplicarService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SkillBadge } from '../components/SkillBadge';
@@ -74,18 +75,14 @@ export function ProyectoDetalle({ id }) {
     if (!propuesta.trim()) { showToast('Escribe tu propuesta antes de enviar.', 'warning'); return; }
     setSubmitting(true);
     try {
-      await createFreelancerProyecto({
-        id_proyecto:   Number(id),
-        id_freelancer: user.id,
-        propuesta:     propuesta.trim(),
-        estado:        'pendiente',
-      });
+      await aplicarProyecto(user.id, Number(id), propuesta.trim());
       showToast('¡Propuesta enviada exitosamente! 🎉', 'success');
       setShowModal(false);
       setPropuesta('');
       loadData();
-    } catch {
-      showToast('Error al enviar la propuesta.', 'error');
+    } catch (err) {
+      const msg = err.response?.data?.desc || 'Error al enviar la propuesta.';
+      showToast(msg, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -217,7 +214,7 @@ export function ProyectoDetalle({ id }) {
                           {fp.userData?.nombre || `Freelancer #${fp.id_freelancer}`}
                         </div>
                         <div class="text-muted small mb-1">{fp.userData?.email}</div>
-                        <div class="small" style={{ color: '#444' }}>{fp.propuesta}</div>
+                        <div class="small" style={{ color: '#444' }}>{fp.propuesta && String(fp.propuesta).trim() !== '' ? fp.propuesta : 'Sin propuesta'}</div>
                       </div>
                       <span
                         class="badge rounded-pill flex-shrink-0"

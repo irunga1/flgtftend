@@ -14,6 +14,12 @@ export const searchFreelancerProyectos = (params) =>
 export const searchByProyecto = (id_proyecto) =>
   api.get('/freelancer_proyectos/search', { params: { id_proyecto } }).then((r) => r.data);
 
+// NEW: GET /freelancer_proyectos/myprojectscl?idclient=<id>
+// Devuelve los proyectos publicados por el cliente y la info de quien aplicó.
+// (según tu descripción, NO está protegido por authJwt)
+export const getMyProjectsClient = (idclient) =>
+  api.get('/freelancer_proyectos/myprojectscl', { params: { idclient } }).then((r) => r.data);
+
 // POST / PUT / DELETE also have no auth requirement
 export const createFreelancerProyecto = (data) =>
   api.post('/freelancer_proyectos', data).then((r) => r.data);
@@ -23,3 +29,4 @@ export const updateFreelancerProyecto = (id, data) =>
 
 export const deleteFreelancerProyecto = (id) =>
   api.delete(`/freelancer_proyectos/${id}`).then((r) => r.data);
+

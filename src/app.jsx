@@ -6,6 +6,8 @@ import { Dashboard } from './pages/Dashboard';
 import { ProyectoDetalle } from './pages/ProyectoDetalle';
 import { Perfil } from './pages/Perfil';
 import { Proyectos } from './pages/Proyectos';
+import { MisAplicaciones } from './pages/MisAplicaciones';
+import { ProyectosAplicacionesClientes } from './pages/ProyectosAplicacionesClientes';
 
 import { NotFound } from './pages/NotFound';
 import { ToastContainer } from './components/ToastContainer';
@@ -28,6 +30,8 @@ export function App() {
         <Dashboard path="/dashboard" />
         <ProyectoDetalle path="/proyectos/:id" />
         <Proyectos path="/proyectos" />
+        <MisAplicaciones path="/mis-aplicaciones" />
+        <ProyectosAplicacionesClientes path="/proyectos-aplicaciones" />
         <Perfil path="/perfil/:id" />
         <NotFound default />
       </Router>

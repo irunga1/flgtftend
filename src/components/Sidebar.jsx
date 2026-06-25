@@ -14,6 +14,33 @@ export function Sidebar() {
       .catch(() => {});
   }, []);
 
+  const getRoleId = (u) => {
+    if (!u) return null;
+    const candidates = [
+      u.id_rol, u.rol, u.idRol, u.role,
+      u.tipo_usuario, u.id_tipo_usuario, u.idTipoUsuario, u.typeUser,
+    ];
+    const found = candidates.find((v) => v !== undefined && v !== null && String(v) !== '');
+    if (found === undefined) return null;
+    const n = Number(found);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const roleId = getRoleId(user);
+  const isFreelancer = Number(roleId) === 2;
+  const isCliente = Number(roleId) === 3;
+
+  const quickLinks = [
+    { icon: '📋', label: 'Todos los proyectos', path: '/dashboard' },
+    { icon: '👥', label: 'Freelancers',         path: '/dashboard' },
+    { icon: '🔧', label: 'Catálogo de skills',  path: '/dashboard' },
+    ...(isFreelancer ? [{ icon: '📮', label: 'Mis aplicaciones', path: '/mis-aplicaciones' }] : []),
+    ...(isCliente ? [
+      { icon: '💼', label: 'Mis proyectos', path: '/proyectos' },
+      { icon: '🧾', label: 'Aplicaciones de mis proyectos', path: '/proyectos-aplicaciones' },
+    ] : []),
+  ];
+
   return (
     <div class="d-flex flex-column gap-3">
       {/* Mini profile */}
@@ -69,11 +96,7 @@ export function Sidebar() {
         <div class="card-body px-3 py-3">
           <h6 class="fw-semibold mb-2" style={{ fontSize: '0.85rem', color: '#000000e6' }}>Accesos rápidos</h6>
           <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
-            {[
-              { icon: '📋', label: 'Todos los proyectos', path: '/dashboard' },
-              { icon: '👥', label: 'Freelancers',         path: '/dashboard' },
-              { icon: '🔧', label: 'Catálogo de skills',  path: '/dashboard' },
-            ].map((l) => (
+            {quickLinks.map((l) => (
               <li key={l.label}>
                 <button
                   class="btn btn-link text-decoration-none p-0"

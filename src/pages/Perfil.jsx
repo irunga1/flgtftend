@@ -3,8 +3,9 @@ import { route } from 'preact-router';
 import { Layout } from '../components/Layout';
 import { getPerfil, updatePerfil } from '../services/perfilService';
 import { getUsuarioSkills, deleteUsuarioSkill } from '../services/usuarioSkillService';
-import { searchFreelancerProyectos } from '../services/freelancerProyectoService';
+import { searchFreelancerProyectos, getMyProjectsClient } from '../services/freelancerProyectoService';
 import { getProyectoById, getProyectos } from '../services/proyectoService';
+
 import { getUserById } from '../services/userService';
 import { getSkills } from '../services/skillService';
 import { useAuth } from '../context/AuthContext';
@@ -127,11 +128,25 @@ export function Perfil({ id }) {
         setAllSkills(Array.isArray(cat) ? cat : []);
       } catch { setAllSkills([]); }
 
-      // Projects for Cliente (id_rol === 3) should consume the same endpoint as Dashboard: GET /proyectos
+      // Projects for Cliente (id_rol === 3): use endpoint that returns the client's own published projects
       if (Number(viewerRoleId) === 3) {
-        const p = await getProyectos();
-        setProyectos(Array.isArray(p) ? p : []);
+        const data = await getMyProjectsClient(id);
+        // Can come as array directly or embedded (items/proyectos).
+        const normalized = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.proyectos)
+            ? data.proyectos
+            : Array.isArray(data?.items)
+              ? data.items
+              : [];
+
+        const publishedList = normalized
+          .map((item) => item?.proyecto || item?.proyectoData || item)
+          .filter(Boolean);
+
+        setProyectos(publishedList);
       } else {
+
         // Default previous behavior for other roles (keep for compatibility)
         const fpData = await searchFreelancerProyectos({ id_freelancer: id });
         const list = Array.isArray(fpData) ? fpData : [];
