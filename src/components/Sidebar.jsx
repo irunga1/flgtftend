@@ -31,14 +31,9 @@ export function Sidebar() {
   const isCliente = Number(roleId) === 3;
 
   const quickLinks = [
-    { icon: '📋', label: 'Todos los proyectos', path: '/dashboard' },
-    { icon: '👥', label: 'Freelancers',         path: '/dashboard' },
-    { icon: '🔧', label: 'Catálogo de skills',  path: '/dashboard' },
+    { icon: '🏠', label: 'Dashboard', path: '/dashboard' },
     ...(isFreelancer ? [{ icon: '📮', label: 'Mis aplicaciones', path: '/mis-aplicaciones' }] : []),
-    ...(isCliente ? [
-      { icon: '💼', label: 'Mis proyectos', path: '/proyectos' },
-      { icon: '🧾', label: 'Aplicaciones de mis proyectos', path: '/proyectos-aplicaciones' },
-    ] : []),
+    ...(isCliente ? [{ icon: '💼', label: 'Mis proyectos', path: '/proyectos' }] : []),
   ];
 
   return (

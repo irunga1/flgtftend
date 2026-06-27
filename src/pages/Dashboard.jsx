@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
+import { route } from 'preact-router';
 import { Layout } from '../components/Layout';
 import { ProyectoCard } from '../components/ProyectoCard';
 import { FreelancerCard } from '../components/FreelancerCard';
@@ -183,9 +184,14 @@ export function Dashboard({ url }) {
 
   const stats = [
     { label: 'Proyectos', value: proyectos.length, icon: '💼', color: '#0a66c2' },
-    { label: 'Activos', value: proyectos.filter((p) => p.estado === 'activo').length, icon: '✅', color: '#057642' },
     ...(isCliente ? [{ label: 'Freelancers', value: users.length, icon: '👥', color: '#915907' }] : []),
     ...(!isCliente ? [{ label: 'Skills', value: skills.length, icon: '🔧', color: '#6b46c1' }] : []),
+  ];
+
+  const quickLinks = [
+    { icon: '🏠', label: 'Dashboard', path: '/dashboard' },
+    ...(isFreelancer ? [{ icon: '📮', label: 'Mis aplicaciones', path: '/mis-aplicaciones' }] : []),
+    ...(isCliente ? [{ icon: '💼', label: 'Mis proyectos', path: '/proyectos' }] : []),
   ];
 
   return (
@@ -228,23 +234,12 @@ export function Dashboard({ url }) {
           </div>
 
           <div class="row g-2">
-            {(
-              [
-                { icon: '📋', label: 'Todos los proyectos', path: '/dashboard' },
-                { icon: '👥', label: 'Freelancers', path: '/dashboard' },
-                { icon: '🔧', label: 'Catálogo de skills', path: '/dashboard' },
-                ...(isFreelancer ? [{ icon: '📮', label: 'Mis aplicaciones', path: '/mis-aplicaciones' }] : []),
-                ...(isCliente ? [
-                  { icon: '💼', label: 'Mis proyectos', path: '/proyectos' },
-                  { icon: '🧾', label: 'Aplicaciones de mis proyectos', path: '/proyectos-aplicaciones' },
-                ] : []),
-              ]
-            ).map((l) => (
+            {quickLinks.map((l) => (
               <div class="col-12 col-sm-6 col-lg-4" key={l.label}>
                 <button
                   class="btn btn-outline-primary w-100"
                   style={{ borderRadius: '14px', borderWidth: 1 }}
-                  onClick={() => (window.location.href = l.path)}
+                  onClick={() => route(l.path)}
                 >
                   <span style={{ fontSize: '1.05rem' }}>{l.icon}</span>
                   <span class="ms-2" style={{ fontWeight: 600 }}>{l.label}</span>
