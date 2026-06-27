@@ -1,7 +1,8 @@
 # TODO
 
-- [x] Ajustar normalización de `propuesta` en `src/pages/Proyectos.jsx` para que el modal muestre texto real cuando el backend lo envía (y solo muestre “Sin propuesta” cuando sea null/vacío).
-- [ ] Verificar que no se rompa el modal para proyectos sin `propuesta`.
-- [x] Correr build/dev para comprobar errores.
-
+- [x] (pendiente) Crear plan de edición para eliminar enlace “Proyectos” y buscador del Navbar.
+- [ ] Editar `src/components/Navbar.jsx`:
+  - [ ] Quitar link “Proyectos” del arreglo `NAV_LINKS`.
+  - [ ] Eliminar bloque completo del buscador (input y contenedor) junto con lógica asociada (estado `query`, ref `handleSearch`), dejando el resto igual.
+- [ ] Ejecutar build/dev para verificar que no queden errores.
 

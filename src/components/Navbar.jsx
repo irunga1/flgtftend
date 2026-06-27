@@ -3,13 +3,14 @@ import { route } from 'preact-router';
 import { useAuth } from '../context/AuthContext';
 
 export function Navbar() {
+
   const { user, logout } = useAuth();
-  const [navOpen,  setNavOpen]  = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
-  const [query,    setQuery]    = useState('');
   const dropRef = useRef(null);
 
   // Close dropdown on outside click
+
   useEffect(() => {
     const handler = (e) => {
       if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false);
@@ -20,19 +21,12 @@ export function Navbar() {
 
   const navigate = (path) => { setNavOpen(false); route(path); };
 
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && query.trim()) {
-      setNavOpen(false);
-      route(`/dashboard?q=${encodeURIComponent(query.trim())}`);
-      setQuery('');
-    }
-  };
-
   const NAV_LINKS = [
+
     { label: 'Inicio',      icon: '🏠', path: '/dashboard' },
-    { label: 'Proyectos',   icon: '💼', path: '/dashboard' },
     { label: 'Freelancers', icon: '👥', path: '/dashboard' },
   ];
+
 
   return (
     <nav
@@ -54,21 +48,7 @@ export function Navbar() {
           <span style={{ color: '#0a66c2', fontWeight: 700, fontSize: '1.1rem' }}>FreelanceGT</span>
         </a>
 
-        {/* Search (md+) */}
-        <div class="d-none d-md-flex mx-3 flex-grow-1" style={{ maxWidth: 280 }}>
-          <div class="input-group input-group-sm">
-            <span class="input-group-text bg-light" style={{ border: '1px solid #dce2e7' }}>🔍</span>
-            <input
-              type="text"
-              class="form-control bg-light"
-              placeholder="Buscar proyectos, skills..."
-              style={{ border: '1px solid #dce2e7', borderLeft: 'none' }}
-              value={query}
-              onInput={(e) => setQuery(e.target.value)}
-              onKeyDown={handleSearch}
-            />
-          </div>
-        </div>
+
 
         {/* Mobile toggle */}
         <button

@@ -211,16 +211,48 @@ export function Dashboard({ url }) {
         </div>
       )}
 
-      <div class="row g-3 mb-4">
-        {stats.map((s) => (
-          <div class="col-6 col-sm-3" key={s.label}>
-            <div class="card text-center py-3" style={{ border: '1px solid #e0dede', borderRadius: '8px' }}>
-              <div style={{ fontSize: '1.4rem' }}>{s.icon}</div>
-              <div class="fw-bold fs-4" style={{ color: s.color }}>{s.value}</div>
-              <small class="text-muted">{s.label}</small>
+      {/* Accesos rápidos (reemplaza Proyectos activos y Skills) */}
+      <div class="card mb-4" style={{ border: '1px solid #e0dede', borderRadius: '8px' }}>
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <h5 class="fw-bold mb-0" style={{ color: '#000000e6' }}>⚡ Accesos rápidos</h5>
+            <div class="d-flex gap-2 flex-wrap">
+              {stats.slice(0, 3).map((s) => (
+                <div key={s.label} class="d-flex flex-column align-items-center px-2" style={{ minWidth: 72 }}>
+                  <div style={{ fontSize: '1.1rem', lineHeight: 1 }}>{s.icon}</div>
+                  <div class="fw-bold" style={{ color: s.color }}>{s.value}</div>
+                  <small class="text-muted" style={{ fontSize: '0.7rem' }}>{s.label}</small>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+
+          <div class="row g-2">
+            {(
+              [
+                { icon: '📋', label: 'Todos los proyectos', path: '/dashboard' },
+                { icon: '👥', label: 'Freelancers', path: '/dashboard' },
+                { icon: '🔧', label: 'Catálogo de skills', path: '/dashboard' },
+                ...(isFreelancer ? [{ icon: '📮', label: 'Mis aplicaciones', path: '/mis-aplicaciones' }] : []),
+                ...(isCliente ? [
+                  { icon: '💼', label: 'Mis proyectos', path: '/proyectos' },
+                  { icon: '🧾', label: 'Aplicaciones de mis proyectos', path: '/proyectos-aplicaciones' },
+                ] : []),
+              ]
+            ).map((l) => (
+              <div class="col-12 col-sm-6 col-lg-4" key={l.label}>
+                <button
+                  class="btn btn-outline-primary w-100"
+                  style={{ borderRadius: '14px', borderWidth: 1 }}
+                  onClick={() => (window.location.href = l.path)}
+                >
+                  <span style={{ fontSize: '1.05rem' }}>{l.icon}</span>
+                  <span class="ms-2" style={{ fontWeight: 600 }}>{l.label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Freelancers registrados: solo para clientes, va primero */}
@@ -396,30 +428,6 @@ export function Dashboard({ url }) {
                     <ProyectoCard proyecto={p} onCardClick={isFreelancer ? openProyectoModal : undefined} />
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Skills catalog: oculto para clientes */}
-      {!isCliente && (
-        <div class="card mb-4" style={{ border: '1px solid #e0dede', borderRadius: '8px' }}>
-          <div class="card-body">
-            <h5 class="fw-bold mb-3" style={{ color: '#000000e6' }}>🔧 Catálogo de Skills</h5>
-            {loading ? (
-              <div class="placeholder-glow d-flex flex-wrap gap-2">
-                {Array.from({ length: 10 }, (_, i) => (
-                  <span key={i} class="placeholder rounded-pill" style={{ width: 70 + i * 8, height: 26 }} />
-                ))}
-              </div>
-            ) : skills.length === 0 ? (
-              <p class="text-muted mb-0">
-                {authError ? 'Skills requieren autenticación para cargarse.' : 'No hay skills registradas.'}
-              </p>
-            ) : (
-              <div class="d-flex flex-wrap gap-2">
-                {skills.map((s) => <SkillBadge key={s.id_skill} nombre={s.nombre} />)}
               </div>
             )}
           </div>
