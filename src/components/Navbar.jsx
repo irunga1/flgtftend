@@ -23,7 +23,7 @@ export function Navbar() {
 
   const NAV_LINKS = [
 
-    { label: 'Inicio',      icon: '🏠', path: '/dashboard' },
+    { label: 'Inicio',      icon: '🏠', path: '/' },
     { label: 'Freelancers', icon: '👥', path: '/dashboard' },
   ];
 

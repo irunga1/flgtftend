@@ -1,6 +1,5 @@
 import Router from 'preact-router';
-import { useEffect } from 'preact/hooks';
-import { route } from 'preact-router';
+
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { ProyectoDetalle } from './pages/ProyectoDetalle';
@@ -8,18 +7,11 @@ import { Perfil } from './pages/Perfil';
 import { Proyectos } from './pages/Proyectos';
 import { MisAplicaciones } from './pages/MisAplicaciones';
 import { ProyectosAplicacionesClientes } from './pages/ProyectosAplicacionesClientes';
+import { Home } from './pages/Home';
 
 import { NotFound } from './pages/NotFound';
 import { ToastContainer } from './components/ToastContainer';
 import { useAuth } from './context/AuthContext';
-
-function Home() {
-  const { isAuthenticated } = useAuth();
-  useEffect(() => {
-    route(isAuthenticated() ? '/dashboard' : '/login', true);
-  }, []);
-  return null;
-}
 
 export function App() {
   return (
