@@ -20,6 +20,14 @@ export const searchByProyecto = (id_proyecto) =>
 export const getMyProjectsClient = (idclient) =>
   api.get('/freelancer_proyectos/myprojectscl', { params: { idclient } }).then((r) => r.data);
 
+// NEW: GET /freelancer_proyectos/myprojectsfl?idfreelancer=<id>
+// Devuelve las aplicaciones/proyectos del freelancer.
+export const getMyProjectsFreelancer = (idfreelancer) =>
+  api
+    .get('/freelancer_proyectos/myprojectsfl', { params: { idfreelancer } })
+    .then((r) => r.data);
+
+
 // POST / PUT / DELETE also have no auth requirement
 export const createFreelancerProyecto = (data) =>
   api.post('/freelancer_proyectos', data).then((r) => r.data);
@@ -27,6 +35,13 @@ export const createFreelancerProyecto = (data) =>
 export const updateFreelancerProyecto = (id, data) =>
   api.put(`/freelancer_proyectos/${id}`, data).then((r) => r.data);
 
+// GET /freelancer_proyectos/selected/{id}?change=true
+export const selectedFreelancerProyecto = (id, change = true) =>
+  api
+    .get(`/freelancer_proyectos/selected/${id}`, { params: { change } })
+    .then((r) => r.data);
+
 export const deleteFreelancerProyecto = (id) =>
   api.delete(`/freelancer_proyectos/${id}`).then((r) => r.data);
+
 

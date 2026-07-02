@@ -3,7 +3,8 @@ import { route } from 'preact-router';
 import { Layout } from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { getAplicaciones } from '../services/aplicarService';
+import { getMyProjectsFreelancer } from '../services/freelancerProyectoService';
+
 import { getProyectoById } from '../services/proyectoService';
 
 function getRoleId(u) {
@@ -27,6 +28,8 @@ export function MisAplicaciones() {
 
   const [aplicaciones, setAplicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [hoveredId, setHoveredId] = useState(null);
 
   useEffect(() => {
     if (Number(viewerRoleId) !== 2) {
@@ -45,8 +48,10 @@ export function MisAplicaciones() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await getAplicaciones(viewerId);
-      const list = Array.isArray(data) ? data : [];
+      const data = await getMyProjectsFreelancer(viewerId);
+      // Backend ejemplo: { status: 'success', rows: [...] }
+      const list = Array.isArray(data?.rows) ? data.rows : Array.isArray(data) ? data : [];
+
 
       // Enriquecer cada aplicación con datos del proyecto
       const enriched = await Promise.all(
@@ -66,6 +71,21 @@ export function MisAplicaciones() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filteredAplicaciones = aplicaciones.filter((app) => {
+    if (filterStatus === 'all') return true;
+    return String(app.estado).toLowerCase() === filterStatus;
+  });
+
+  const getSkills = (app) => {
+    return [
+      app.skill1,
+      app.skill2,
+      app.skill3,
+      app.skill4,
+      app.skill5,
+    ].filter((skill) => skill && String(skill).trim() !== '');
   };
 
   return (
@@ -94,65 +114,132 @@ export function MisAplicaciones() {
               Mis aplicaciones ({aplicaciones.length})
             </h5>
 
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              {['all', 'selected', 'waiting', 'rejected'].map((status) => (
+                <button
+                  type="button"
+                  class={`btn btn-sm ${filterStatus === status ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  style={{ borderRadius: '20px', textTransform: 'capitalize' }}
+                  onClick={() => setFilterStatus(status)}
+                >
+                  {status === 'all' ? 'Todos' : status}
+                </button>
+              ))}
+            </div>
+
             {loading ? (
               <div class="text-center py-4">
                 <div class="spinner-border text-primary" role="status" />
               </div>
-            ) : aplicaciones.length === 0 ? (
+            ) : filteredAplicaciones.length === 0 ? (
               <div class="text-center py-4">
                 <div style={{ fontSize: '2rem' }}>📋</div>
-                <p class="text-muted mt-2 mb-0">No has aplicado a ningún proyecto aún.</p>
+                <p class="text-muted mt-2 mb-0">No hay aplicaciones con ese filtro.</p>
               </div>
             ) : (
               <div class="d-flex flex-column gap-3">
-                {aplicaciones.map((app) => (
-                  <div
-                    key={app.id_proyecto}
-                    class="d-flex align-items-start gap-3 p-3 rounded"
-                    style={{ backgroundColor: '#f3f2ef', cursor: 'pointer' }}
-                    onClick={() => route(`/proyectos/${app.id_proyecto}`)}
-                  >
+                {filteredAplicaciones.map((app) => {
+                  const skills = getSkills(app);
+                  const title = app.proyecto?.titulo || app.titulo || app.proyecto?.nombre || `Proyecto #${app.id_proyecto}`;
+                  const description = app.proyecto?.descripcion || app.descripcion || app.proyecto?.detalles || 'Sin descripción';
+                  const clientName = app.nombre || app.proyecto?.nombre || app.proyecto?.cliente_nombre || `Cliente #${app.id_cliente}`;
+                  const budget = Number(app.proyecto?.presupuesto || app.presupuesto || 0).toLocaleString();
+                  const isHovered = hoveredId === (app.id_freelancer_proyecto ?? app.id_proyecto);
+
+                  return (
                     <div
-                      class="d-flex align-items-center justify-content-center rounded flex-shrink-0"
-                      style={{ width: 40, height: 40, backgroundColor: '#e8f0fe', fontSize: '1.2rem' }}
+                      key={app.id_freelancer_proyecto ?? app.id_proyecto}
+                      class="d-flex flex-column gap-3 p-3 rounded"
+                      style={{
+                        backgroundColor:
+                          app.estado === 'selected'
+                            ? '#fff7e6'
+                            : app.estado === 'rejected'
+                              ? '#fdecea'
+                              : app.estado === 'waiting'
+                                ? '#eef4ff'
+                                : '#f3f2ef',
+                        border: isHovered
+                          ? '1px solid rgba(13, 110, 253, 0.45)'
+                          : app.estado === 'selected'
+                            ? '1px solid #f59e0b'
+                            : '1px solid transparent',
+                        cursor: 'pointer',
+                        boxShadow: isHovered ? '0 16px 30px rgba(15, 23, 42, 0.08)' : 'none',
+                        transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
+                        transform: isHovered ? 'translateY(-1px)' : 'none',
+                      }}
+                      onMouseEnter={() => setHoveredId(app.id_freelancer_proyecto ?? app.id_proyecto)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      onClick={() => route(`/proyectos/${app.id_proyecto}`)}
                     >
-                      💼
-                    </div>
-                    <div class="flex-grow-1 min-w-0">
-                      <div class="fw-semibold" style={{ fontSize: '0.9rem', color: '#0a66c2' }}>
-                        {app.proyecto?.titulo || `Proyecto #${app.id_proyecto}`}
+                      <div class="d-flex align-items-start gap-3">
+                        <div
+                          class="d-flex align-items-center justify-content-center rounded flex-shrink-0"
+                          style={{ width: 44, height: 44, backgroundColor: '#e8f0fe', fontSize: '1.3rem' }}
+                        >
+                          💼
+                        </div>
+                        <div class="flex-grow-1 min-w-0">
+                          <div class="fw-semibold" style={{ fontSize: '0.95rem', color: '#0a66c2' }}>
+                            {title}
+                          </div>
+                          <div class="text-muted small mt-1" style={{ whiteSpace: 'pre-line' }}>
+                            {description}
+                          </div>
+                        </div>
+                        <div class="text-end flex-shrink-0">
+                          <span
+                            class="badge rounded-pill d-block mb-2"
+                            style={{
+                              backgroundColor:
+                                app.estado === 'selected'
+                                  ? '#fff3c4'
+                                  : app.estado === 'waiting'
+                                    ? '#e8f0fe'
+                                    : app.estado === 'rejected'
+                                      ? '#fce8e6'
+                                      : '#e8f0fe',
+                              color:
+                                app.estado === 'selected'
+                                  ? '#92400e'
+                                  : app.estado === 'waiting'
+                                    ? '#0a66c2'
+                                    : app.estado === 'rejected'
+                                      ? '#b24020'
+                                      : '#0a66c2',
+                              fontSize: '0.75rem',
+                            }}
+                          >
+                            {app.estado}
+                          </span>
+                          <div class="small fw-semibold" style={{ color: '#0a66c2', fontWeight: 600 }}>
+                            Q{budget}
+                          </div>
+                        </div>
                       </div>
-                      <div class="text-muted small mt-1 text-truncate">
-                        {app.proyecto?.descripcion || 'Sin descripción'}
+
+                      <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mt-2">
+                        <div class="small text-muted">Cliente: {clientName}</div>
+                        <div class="small text-muted">ID: {app.id_freelancer_proyecto ?? app.id_proyecto}</div>
                       </div>
+
+                      {skills.length > 0 && (
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                          {skills.map((skill, index) => (
+                            <span
+                              key={`${app.id_proyecto}-${index}`}
+                              class="badge rounded-pill"
+                              style={{ backgroundColor: '#eef2ff', color: '#3730a3', fontSize: '0.75rem' }}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <div class="text-end flex-shrink-0">
-                      <span
-                        class="badge rounded-pill d-block mb-2"
-                        style={{
-                          backgroundColor:
-                            app.estado === 'aceptada'
-                              ? '#e6f4ea'
-                              : app.estado === 'rechazada'
-                              ? '#fce8e6'
-                              : '#e8f0fe',
-                          color:
-                            app.estado === 'aceptada'
-                              ? '#057642'
-                              : app.estado === 'rechazada'
-                              ? '#b24020'
-                              : '#0a66c2',
-                          fontSize: '0.75rem',
-                        }}
-                      >
-                        {app.estado}
-                      </span>
-                      <div class="small" style={{ color: '#0a66c2', fontWeight: 600 }}>
-                        Q{Number(app.proyecto?.presupuesto || 0).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

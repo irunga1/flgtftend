@@ -8,7 +8,9 @@ import {
   searchByProyecto,
   updateFreelancerProyecto,
   getMyProjectsClient,
+  selectedFreelancerProyecto,
 } from '../services/freelancerProyectoService';
+
 import { getUserById } from '../services/userService';
 import { getSkills } from '../services/skillService';
 import { SkillsMultiSelect } from '../components/SkillsMultiSelect';
@@ -513,6 +515,29 @@ export function Proyectos() {
     }
   };
 
+  const handleAceptarPropuesta = async (idFreelancerProyecto) => {
+    try {
+      const result = await selectedFreelancerProyecto(idFreelancerProyecto, true);
+
+      // Ejemplo de respuesta:
+      // { id_freelancer_proyecto: 1, estado: 'selected' }
+      if (result?.estado === 'selected') {
+        showToast('positivo', 'success');
+      } else {
+        const estadoTxt = result?.estado ?? '—';
+        showToast(`Resultado: ${estadoTxt}`, 'success');
+      }
+
+      if (selectedProyectoForPropuestas) {
+        openPropuestasModal(selectedProyectoForPropuestas);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.desc || 'Error al aceptar la propuesta.';
+      showToast(msg, 'error');
+    }
+  };
+
+
   const getFreelancerProfileId = (prop) =>
     prop?.id_freelancer ??
     prop?.freelancer?.id_usuario ??
@@ -827,10 +852,11 @@ export function Proyectos() {
                                 <button
                                   class="btn btn-sm btn-success flex-grow-1"
                                   style={{ borderRadius: '6px', fontSize: '0.8rem' }}
-                                  onClick={() => handleActualizarEstadoPropuesta(prop.id_freelancer_proyecto, 'aceptada')}
+onClick={() => handleAceptarPropuesta(prop.id_freelancer_proyecto)}
                                 >
                                   ✓ Aceptar
                                 </button>
+
                                 <button
                                   class="btn btn-sm btn-danger flex-grow-1"
                                   style={{ borderRadius: '6px', fontSize: '0.8rem' }}

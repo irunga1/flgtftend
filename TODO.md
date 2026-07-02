@@ -1,8 +1,7 @@
 # TODO
+- [ ] Actualizar `src/pages/MisAplicaciones.jsx` para que el listado de `myprojectsfl` pinte más información por proyecto.
+- [ ] En `MisAplicaciones.jsx`, agregar un badge/estilo especial cuando `app.estado === 'selected'` (y diferenciar también `waiting` y `rejected`).
+- [ ] Revisar que el `key` del mapeo sea estable (usar `app.id_freelancer_proyecto` si existe, si no `app.id_proyecto`).
+- [ ] Ejecutar `npm run dev` y verificar visualmente en `/mis-aplicaciones` que el color cambia para `selected` y que aparecen más datos (badge + ID).
 
-- [x] (pendiente) Crear plan de edición para eliminar enlace “Proyectos” y buscador del Navbar.
-- [ ] Editar `src/components/Navbar.jsx`:
-  - [ ] Quitar link “Proyectos” del arreglo `NAV_LINKS`.
-  - [ ] Eliminar bloque completo del buscador (input y contenedor) junto con lógica asociada (estado `query`, ref `handleSearch`), dejando el resto igual.
-- [ ] Ejecutar build/dev para verificar que no queden errores.
 
